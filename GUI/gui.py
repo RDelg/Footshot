@@ -1,49 +1,57 @@
-import PySimpleGUI as sg
-import numpy as np
 import cv2
+import numpy as np
+import PySimpleGUI as sg
 
-frame_layout = [
-                  [sg.Image(data='', background_color='gray', size=(320, 240), key='infrarrojo', tooltip ='Imagen IR')]      
-               ]
+class FootGui(object):
 
-frame_layout2 = [ 
-                  [sg.Image(filename='visual.png', background_color='green', size=(320, 240), key='visual', tooltip ='Imagen Visual')]      
-                ] 
-
-layout = [
-            [
-              sg.Frame('Infrarrojo', frame_layout, font='Any 12', title_color='blue'),
-              #sg.VerticalSeparator(pad=(0,0)),
-              sg.Frame('Visible', frame_layout2, font='Any 12', title_color='blue')
-            ],
-            [
-              sg.T(' '  * 10),
-              sg.Button('Record', size=(5, 1), font='Helvetica 10'),
-              sg.Button('Stop', size=(5, 1), font='Any 10'),
-              sg.Button('Exit', size=(5, 1), font='Helvetica 10'),
-              sg.Button('About', size=(5,1), font='Any 10')
-            ],
-            [
-              sg.T(' '  * 10)
+  _left_frame = [      
+                  [sg.T('Text inside of a frame')],      
+                  [sg.CB('Check 1'), sg.CB('Check 2')],
+                  [sg.Image(filename='infrarrojo.png', background_color='gray', size=(640, 480), key='infrarrojo', tooltip ='Imagen IR')]      
+                ]
+  _right_frame =  [      
+                    [sg.T('Text inside of a frame')],      
+                    [sg.CB('Check 1'), sg.CB('Check 2')],
+                    [sg.Image(filename='visual.png', background_color='green', size=(640, 480), key='visual', tooltip ='Imagen Visual')]      
+                  ]
+  _layout = [
+              [
+                sg.Frame('Infrarrojo', _left_frame, font='Any 12', title_color='blue'),
+                sg.Frame('Visible', _right_frame, font='Any 12', title_color='blue')
+              ],
+              [
+                sg.T(' '  * 50),
+                sg.Button('Record', size=(20, 1), font='Helvetica 14'),
+                sg.Button('Stop', size=(20, 1), font='Any 14'),
+                sg.Button('Exit', size=(20, 1), font='Helvetica 14'),
+                sg.Button('About', size=(20,1), font='Any 14')
+              ],
+              [
+                sg.T(' '  * 10)
+              ]
             ]
-        ]   
+
+  def __init__(self):
+    self.window = sg.Window('Footshot', grab_anywhere=True, icon= 'Isotipo.ico').Layout(self._layout)
+
+  def read(self):
+    return self.window.Read()
+
+  def update_img(self, img_left, img_right):
+    window.FindElement('infrarrojo').Update(data=img_left)
+    window.FindElement('visual').Update(data=img_right)
+
+  def __del__(self):
+    self.window.Close()
 
 
-window = sg.Window('Footshot', grab_anywhere=True, icon= 'Isotipo.ico').Layout(layout)
-
-while True:
-  event, values = window.Read()  
-  print(event, values)
-  if event is None or event == 'Exit':  
-      break  
-  if event == 'Show':  
-      # change the "output" element to be the value of "input" element  
-      window.FindElement('_OUTPUT_').Update(values['_IN_'])
+def main():
+  fg = FootGui()
+  while True:
+    event, values = fg.read()
+    if event == 'Exit':
+      break
 
 
-# img = np.full((480, 640),255)
-# imgbytes=cv2.imencode('.png', img)[1].tobytes() #this is faster, shorter and needs less includes
-# window.FindElement('image2').Update(data=imgbytes)
-# sg.Popup(event, values, line_width=200)
-
-window.Close()
+if __name__ == '__main__':
+  main()
