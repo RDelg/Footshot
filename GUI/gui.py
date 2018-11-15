@@ -7,9 +7,9 @@ import PySimpleGUI27 as sg
 
 class Camera(object):
 
-  _Y16 = _frame_format = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
+  _Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
 
-  def __init__(self, context, vendor_id=0, product_id=0, frame_format=self._Y16, width=160, height=120, frame_rate=9):
+  def __init__(self, context, vendor_id=0, product_id=0, frame_format=_Y16, width=160, height=120, frame_rate=9):
     self.context = context
     self.find_device(vendor_id, product_id)
     self.device.open()
