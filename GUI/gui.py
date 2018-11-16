@@ -5,9 +5,6 @@ import uvclite
 import PySimpleGUI27 as sg
 
 
-from time import sleep
-
-
 class Camera(object):
 
   _Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
@@ -59,6 +56,8 @@ class Camera(object):
   def get_img_jpg(self, timeout, size=(320, 240)):
     frame = self.get_frame(timeout)
     data = np.frombuffer(frame.data, dtype=np.uint16)
+    if self.width != size[0] or self.height != size[1]:
+      data = cv2.resize(data, size)
     img = cv2.imdecode(data, 1)
     return cv2.imencode('.png', img)[1].tobytes()
 
