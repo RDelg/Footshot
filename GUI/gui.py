@@ -5,6 +5,9 @@ import uvclite
 import PySimpleGUI27 as sg
 
 
+from time import sleep
+
+
 class Camera(object):
 
   _Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
@@ -59,11 +62,11 @@ class Camera(object):
     img = cv2.imdecode(data, 1)
     return cv2.imencode('.png', img)[1].tobytes()
 
-  def __del__(self):
-    if self.streaming:
-      self.device.stop_streaming()
-      self.streaming == False
-    device.close()
+  # def __del__(self):
+  #   # if self.is_streaming:
+  #   #   self.device.stop_streaming()
+  #   #   self.is_streaming == False
+  #   self.device.close()
 
 
 class FootGui(object):
@@ -132,6 +135,8 @@ def main():
         img_vis = cam_VIS.get_img_jpg(0)
         fg.update_img(img_ir, img_vis)
         if event == 'Exit':
+          cam_IR.stop_streaming()
+          cam_VIS.stop_streaming()
           loop = False
       except uvclite.UVCError as e:
         print(e)
