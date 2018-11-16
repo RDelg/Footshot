@@ -103,16 +103,61 @@ class FootGui(object):
       ]
   ]
 
-  def __init__(self):
+  def __init__(self, left_dev, right_dev):
     self.window = sg.Window('Footshot', grab_anywhere=True,
                             icon='Isotipo.ico').Layout(self._layout)
+    self.left_dev = left_dev
+    self.right_dev = right_dev
+    self.is_left_capturing = False
+    self.is_right_capturing = False
+
+  def start_streaming(self):
+    if not self.left_dev.is_streaming and not self.left_dev.is_streaming:
+      self.left_dev.start_streaming()
+      self.right_dev.start_streaming()
+
+  def stop_streaming(self):
+    if self.left_dev.is_streaming and self.left_dev.is_streaming:
+      self.left_dev.stop_streaming()
+      self.right_dev.stop_streaming()
 
   def read(self, timeout=None):
     return self.window.Read(timeout)
 
-  def update_img(self, img_left, img_right):
+  def update_left(self, img_left):
     self.window.FindElement('infrarrojo').Update(data=img_left)
+
+  def update_right(self, img_right):
     self.window.FindElement('visual').Update(data=img_right)
+
+  def run_left(self):
+    if not self.is_left_capturing:
+      self.is_left_capturing = True
+      while self.is_left_capturing and self.left_dev.is_streaming:
+        try:
+          left_img = self.left_dev.get_img_raw(0)
+          self.update_left(left_img)
+        except uvclite.UVCError as e:
+          print(e)
+
+  def run_right(self):
+    if not self.is_right_capturing:
+      self.is_right_capturing = True
+      while self.is_right_capturing and self.right_dev.is_streaming:
+        try:
+          right_img = self.right_dev.get_img_jpg(0)
+          self.update_right(right_img)
+        except uvclite.UVCError as e:
+          print(e)
+
+  def run(self):
+    if not self.is_left_capturing:
+      self.left_thread = threading.Thread(target=self.run_left)
+      self.left_thread.start()
+
+    if not self.is_right_capturing:
+      self.right_thread = threading.Thread(target=self.run_right)
+      self.right_thread.start()
 
   def close(self):
     self.window.Close()
@@ -121,18 +166,7 @@ class FootGui(object):
     self.window.Close()
 
 
-def update_imgs(gui, left_dev, right_dev):
-  while left_dev.is_streaming and right_dev.is_streaming:
-    try:
-      left_img = left_dev.get_img_raw(0)
-      right_img = right_dev.get_img_jpg(0)
-      gui.update_img(left_img, right_img)
-    except uvclite.UVCError as e:
-      print(e)
-
-
 def main():
-  fg = FootGui()
   with uvclite.UVCContext() as context:
     Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
     MJPEG = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_MJPEG
@@ -140,27 +174,27 @@ def main():
     cam_IR = Camera(context, 0x1e4e, 0x0100, Y16, 160, 120, 9)
     cam_VIS = Camera(context, 0x046d, 0x082b, MJPEG, 320, 240, 30)
 
-    cam_IR.start_streaming()
-    cam_VIS.start_streaming()
+    fg = FootGui(cam_IR, cam_VIS)
 
-    t = threading.Thread(target=update_imgs, args=(fg, cam_IR, cam_VIS,))
     loop = True
     while loop:
       print("a")
       event, values = fg.read()
 
-
       if event == 'Exit':
-        # t.do_run = False
         loop = False
       if event == 'Record':
-        t.start()
-
+        fg.start_streaming()
+        fg.run()
+      if event == 'About':
+        continue
       if event == 'Stop':
-        cam_IR.stop_streaming()
-        cam_VIS.stop_streaming()
+        fg.is_left_capturing = False
+        fg.is_right_capturing = False
+        fg.stop_streaming()
 
     fg.close()
+
 
 if __name__ == '__main__':
   main()
