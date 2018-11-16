@@ -1,3 +1,4 @@
+import logging
 import threading
 
 import cv2
@@ -5,6 +6,11 @@ import numpy as np
 
 import uvclite
 import PySimpleGUI27 as sg
+
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='[%(levelname)s] (%(threadName)-10s) %(message)s',
+                    )
 
 
 class Camera(object):
@@ -138,7 +144,9 @@ class FootGui(object):
           left_img = self.left_dev.get_img_raw(0)
           self.update_left(left_img)
         except uvclite.UVCError as e:
-          print(e)
+          logging.debug(e)
+        except Exception as e:
+          logging.debug(e)
 
   def run_right(self):
     if not self.is_right_capturing:
@@ -148,15 +156,17 @@ class FootGui(object):
           right_img = self.right_dev.get_img_jpg(0)
           self.update_right(right_img)
         except uvclite.UVCError as e:
-          print(e)
+          logging.debug(e)
+        except cv2.error as e:
+          logging.debug(e)
 
   def run(self):
     if not self.is_left_capturing:
-      self.left_thread = threading.Thread(target=self.run_left)
+      self.left_thread = threading.Thread(name='Carama izquierda', target=self.run_left)
       self.left_thread.start()
 
     if not self.is_right_capturing:
-      self.right_thread = threading.Thread(target=self.run_right)
+      self.right_thread = threading.Thread(name= "Camara derecha", target=self.run_right)
       self.right_thread.start()
 
   def close(self):
@@ -178,7 +188,6 @@ def main():
 
     loop = True
     while loop:
-      print("a")
       event, values = fg.read()
 
       if event == 'Exit':
