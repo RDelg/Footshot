@@ -1,3 +1,5 @@
+import threading
+
 import cv2
 import numpy as np
 
@@ -34,10 +36,10 @@ class Camera(object):
   def stop_streaming(self):
     if self.is_streaming:
       self.device.stop_streaming()
-      self.start_streaming = False
+      self.is_streaming = False
 
   def get_frame(self, timeout):
-    assert self.is_streaming, "La camara no esta en streaming"
+    assert self.is_streaming, "La camara no esta en modo streaming"
     return self.device.get_frame(timeout)
 
   def get_img_raw(self, timeout, size=(320, 240)):
@@ -62,9 +64,9 @@ class Camera(object):
     return cv2.imencode('.png', img)[1].tobytes()
 
   # def __del__(self):
-  #   # if self.is_streaming:
-  #   #   self.device.stop_streaming()
-  #   #   self.is_streaming == False
+  #   if self.is_streaming:
+  #     self.device.stop_streaming()
+  #     self.is_streaming == False
   #   self.device.close()
 
 
@@ -105,45 +107,60 @@ class FootGui(object):
     self.window = sg.Window('Footshot', grab_anywhere=True,
                             icon='Isotipo.ico').Layout(self._layout)
 
-  def read(self, timeout):
+  def read(self, timeout=None):
     return self.window.Read(timeout)
 
   def update_img(self, img_left, img_right):
     self.window.FindElement('infrarrojo').Update(data=img_left)
     self.window.FindElement('visual').Update(data=img_right)
 
+  def close(self):
+    self.window.Close()
+
   def __del__(self):
     self.window.Close()
+
+
+def update_imgs(gui, left_dev, right_dev):
+  while left_dev.is_streaming and right_dev.is_streaming:
+    try:
+      left_img = left_dev.get_img_raw(0)
+      right_img = right_dev.get_img_jpg(0)
+      gui.update_img(left_img, right_img)
+    except uvclite.UVCError as e:
+      print(e)
 
 
 def main():
   fg = FootGui()
   with uvclite.UVCContext() as context:
-    cam_IR = Camera(context, 0x1e4e, 0x0100)
+    Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
     MJPEG = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_MJPEG
+
+    cam_IR = Camera(context, 0x1e4e, 0x0100, Y16, 160, 120, 9)
     cam_VIS = Camera(context, 0x046d, 0x082b, MJPEG, 320, 240, 30)
 
     cam_IR.start_streaming()
     cam_VIS.start_streaming()
 
+    t = threading.Thread(target=update_imgs, args=(fg, cam_IR, cam_VIS,))
     loop = True
     while loop:
-      try:
-        event, values = fg.read(0)
-        img_ir = cam_IR.get_img_raw(0)
-        img_vis = cam_VIS.get_img_jpg(0)
-        fg.update_img(img_ir, img_vis)
-        if event == 'Exit':
-          cam_IR.stop_streaming()
-          cam_VIS.stop_streaming()
-          loop = False
-      except uvclite.UVCError as e:
-        print(e)
-        if(e[1] == 110):
-          continue
-        else:
-          break
+      print("a")
+      event, values = fg.read()
 
+
+      if event == 'Exit':
+        # t.do_run = False
+        loop = False
+      if event == 'Record':
+        t.start()
+
+      if event == 'Stop':
+        cam_IR.stop_streaming()
+        cam_VIS.stop_streaming()
+
+    fg.close()
 
 if __name__ == '__main__':
   main()
