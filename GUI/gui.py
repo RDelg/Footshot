@@ -1,5 +1,6 @@
 import logging
 import threading
+from time import sleep
 
 import cv2
 import numpy as np
@@ -9,7 +10,7 @@ import PySimpleGUI27 as sg
 
 
 logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s: [%(levelname)s] (%(threadName)-10s) %(message)s',
+                    format='%(asctime)s: [%(levelname)s] (%(threadName)-10s) %(message)s'
                     )
 
 
@@ -73,31 +74,38 @@ class Camera(object):
     assert self.is_streaming, "La camara no esta en modo streaming"
     return self.device.get_frame(timeout)
 
-  def get_img_raw(self, timeout, size=(320, 240)):
+  def get_img_Y16(self, timeout, size=(320, 240)):
     frame = self._get_frame(timeout)
-    if frame.size != (2*self.height*self.width):
-      return None
+    # La camara no siempre devuelve un frame completo
+    while frame.size != (2*self.height*self.width):
+      frame = self._get_frame(timeout)
+    # Convertimos a un array de numpy
     data = np.frombuffer(frame.data, dtype=np.uint16).reshape(
         self.height, self.width)
+    # Verificando reescalado
     if self.width != size[0] or self.height != size[1]:
       data = cv2.resize(data, size)
     cv2.normalize(data, data, 0, 65535, cv2.NORM_MINMAX)
+    # 16bits a 8bits
     np.right_shift(data, 8, data)
+    # to RGB
     img = cv2.cvtColor(np.uint8(data), cv2.COLOR_GRAY2RGB)
-    return cv2.imencode('.png', img)[1].tobytes()
+    return img
+    # Normalizado
+    # return cv2.imencode('.png', img)[1].tobytes()
 
-  def get_img_jpg(self, timeout, size=(320, 240)):
+  def get_img_MJPEG(self, timeout, size=(320, 240)):
     frame = self._get_frame(timeout)
     data = np.frombuffer(frame.data, dtype=np.uint16)
     if self.width != size[0] or self.height != size[1]:
       data = cv2.resize(data, size)
-    img = cv2.imdecode(data, 1)
-    return cv2.imencode('.png', img)[1].tobytes()
+    return cv2.imdecode(data, 1)
+    # return cv2.imencode('.png', img)[1].tobytes()
 
   # TODO
   @staticmethod
-  def WriteImage(img):
-    pass
+  def imwrite(path, img):
+    cv2.imwrite(path, img)
 
   # def __del__(self):
   #   if self.is_streaming:
@@ -109,14 +117,10 @@ class Camera(object):
 class FootGui(object):
 
   _left_frame = [
-      [sg.T('Text inside of a frame')],
-      [sg.CB('Check 1'), sg.CB('Check 2')],
       [sg.Image(data='', background_color='gray', size=(
           320, 240), key='infrarrojo', tooltip='Imagen IR')]
   ]
   _right_frame = [
-      [sg.T('Text inside of a frame')],
-      [sg.CB('Check 1'), sg.CB('Check 2')],
       [sg.Image(data='', background_color='green', size=(
           320, 240), key='visual', tooltip='Imagen Visual')]
   ]
@@ -139,18 +143,28 @@ class FootGui(object):
       ]
   ]
 
+  _capture_layout = [[sg.Text('Tomando capturas')],
+                     [sg.ProgressBar(10, orientation='h',
+                                     size=(20, 20), key='progressbar')]]
+
   def __init__(self, left_dev, right_dev):
-    self.window = sg.Window('Footshot', grab_anywhere=True,
+    self.window = sg.Window('Footshot', grab_anywhere=False,
                             icon='Isotipo.ico').Layout(self._layout)
     self.left_dev = left_dev
     self.right_dev = right_dev
     self.is_left_capturing = False
     self.is_right_capturing = False
+    self.save_left = 0
+    self.save_right = 0
+    self.start_streaming()
+    self.start_capturing()
+    self.lock = threading.RLock()
 
   def start_streaming(self):
     if not self.left_dev.is_streaming and not self.left_dev.is_streaming:
       self.left_dev.start_streaming()
       self.right_dev.start_streaming()
+      sleep(1)
 
   def stop_streaming(self):
     if self.left_dev.is_streaming and self.left_dev.is_streaming:
@@ -161,18 +175,33 @@ class FootGui(object):
     return self.window.Read(timeout)
 
   def update_left(self, img_left):
-    self.window.FindElement('infrarrojo').Update(data=img_left)
+    self.img_left = cv2.imencode('.png', img_left)[1]
+    self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
 
   def update_right(self, img_right):
-    self.window.FindElement('visual').Update(data=img_right)
+    self.img_right = cv2.imencode('.png', img_right)[1].tobytes()
+    self.window.FindElement('visual').Update(data=self.img_right)
 
   def run_left(self):
     if not self.is_left_capturing:
       self.is_left_capturing = True
       while self.is_left_capturing and self.left_dev.is_streaming:
         try:
-          left_img = self.left_dev.get_img_raw(0)
-          self.update_left(left_img)
+          img_left = self.left_dev.get_img_Y16(0)
+          self.update_left(img_left)
+          # Guardando imagen
+          if self.save_left > 0:
+            self.lock.acquire()
+            logging.debug('Guardando imagen %s' % self.save_left)
+            self.left_dev.imwrite('IR_%s.png' % self.save_left, img_left)
+            self.save_left += -1
+
+            # Update ventana de progreso
+            self.window2.FindElement('progressbar').UpdateBar(-1 * (self.save_left - self.n_imgs))
+            if self.save_left == 0:
+              self.window2.Close()
+
+            self.lock.release()
         except uvclite.UVCError as e:
           logging.debug(e)
         except Exception as e:
@@ -183,26 +212,46 @@ class FootGui(object):
       self.is_right_capturing = True
       while self.is_right_capturing and self.right_dev.is_streaming:
         try:
-          right_img = self.right_dev.get_img_jpg(0)
-          self.update_right(right_img)
+          img_right = self.right_dev.get_img_MJPEG(0)
+          self.update_right(img_right)
+          if self.save_right > 0:
+            self.lock.acquire()
+            logging.debug('Guardando imagen %s' % self.save_right)
+            self.right_dev.imwrite('VIS_%s.png' % self.save_right, img_right)
+            self.save_right += -1
+            self.lock.release()
         except uvclite.UVCError as e:
           logging.debug(e)
         except cv2.error as e:
           logging.debug(e)
 
-  def run(self):
-    if not self.is_left_capturing:
-      self.left_thread = threading.Thread(
-          name='Carama izquierda', target=self.run_left)
-      self.left_thread.start()
+  def start_capturing(self, sync=False):
+    self.left_thread = threading.Thread(
+        name='Carama izquierda', target=self.run_left)
+    self.left_thread.start()
 
-    if not self.is_right_capturing:
-      self.right_thread = threading.Thread(
-          name="Camara derecha", target=self.run_right)
-      self.right_thread.start()
+    self.right_thread = threading.Thread(
+        name="Camara derecha", target=self.run_right)
+    self.right_thread.start()
+
+  def stop_capturing(self):
+    self.is_left_capturing = False
+    self.is_right_capturing = False
 
   def close(self):
     self.window.Close()
+
+  def save(self, n_imgs):
+    if self.is_left_capturing and self.is_right_capturing:
+      logging.debug('Guardando %s imagenes' % n_imgs)
+      self.n_imgs = n_imgs
+      self.save_left = n_imgs
+      self.save_right = n_imgs
+    else:
+      logging.debug('Camaras no estan en modo streaming. No se pueden guardar imagenes')
+
+    self.window2 = sg.Window('Footshot', grab_anywhere=False,
+                            icon='Isotipo.ico').Layout(self._capture_layout).Finalize()
 
   def __del__(self):
     self.close()
@@ -213,27 +262,27 @@ def main():
     try:
       Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
       MJPEG = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_MJPEG
-      # cam_IR = Camera(context, 0x1e5e, 0x0100, Y16, 160, 120, 9)
+
       cam_IR = Camera(context, 0x1e4e, 0x0100, Y16, 160, 120, 9)
       cam_VIS = Camera(context, 0x046d, 0x082b, MJPEG, 320, 240, 30)
 
       fg = FootGui(cam_IR, cam_VIS)
-      fg.start_streaming()
-      fg.run()
+
       loop = True
       while loop:
         event, values = fg.read()
-
         if event == 'Record':
           fg.start_streaming()
-          fg.run()
+          fg.start_capturing()
         if event == 'Stop':
-          fg.is_left_capturing = False
-          fg.is_right_capturing = False
+          fg.stop_capturing()
           fg.stop_streaming()
         if event == 'Exit':
+          fg.stop_capturing()
+          fg.stop_streaming()
           loop = False
         if event == 'About':
+          fg.save(10)
           continue
 
       fg.close()
