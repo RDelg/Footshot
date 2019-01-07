@@ -182,13 +182,13 @@ class FootGui(object):
 
   def update_right(self, img_right):
   	#begin
-	rows, cols = img_right.shape
-	M = cv2.getRotationMatrix2D((cols,rows),180,1)
-	img_right_rotated = cv2.warpAffine(img, M, (cols, rows))
+	logging.debug(img_right.shape)
+	#M = cv2.getRotationMatrix2D((cols,rows),180,1)
+	#img_right_rotated = cv2.warpAffine(img, M, (cols, rows))
   	#end
 
   	#back to img_right if everything goes wrong
-  	self.img_right = cv2.imencode('.png', img_right_rotated)[1].tobytes()
+  	self.img_right = cv2.imencode('.png', img_right)[1].tobytes()
 	self.window.FindElement('visual').Update(data=self.img_right)
 
   def run_left(self):
