@@ -184,7 +184,7 @@ class FootGui(object):
   	#begin
 	rows, cols, d = img_right.shape
 	M = cv2.getRotationMatrix2D((cols,rows),180,1)
-	img_right_rotated = cv2.warpAffine(img, M, (cols, rows))
+	img_right_rotated = cv2.warpAffine(img_right, M, (cols, rows))
   	#end
 
   	#back to img_right if everything goes wrong
