@@ -280,12 +280,12 @@ def main():
           fg.stop_streaming()
         if event == 'Exit':
           loop = False
-          fg.stop_capturing()
-          fg.stop_streaming()
         if event == 'About':
           fg.save(10)
           continue
 
+      fg.stop_capturing()
+      fg.stop_streaming()
       fg.close()
       sys.exit(0)
 
