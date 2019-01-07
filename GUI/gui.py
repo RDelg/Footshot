@@ -1,5 +1,6 @@
 import logging
 import threading
+import sys
 from time import sleep
 
 import cv2
@@ -286,6 +287,7 @@ def main():
           continue
 
       fg.close()
+      sys.exit(0)
 
     except uvclite.UVCError as e:
       logging.debug(e)
