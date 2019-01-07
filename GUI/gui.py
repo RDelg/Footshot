@@ -279,9 +279,9 @@ def main():
           fg.stop_capturing()
           fg.stop_streaming()
         if event == 'Exit':
+          loop = False
           fg.stop_capturing()
           fg.stop_streaming()
-          loop = False
         if event == 'About':
           fg.save(10)
           continue
