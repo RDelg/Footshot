@@ -137,7 +137,8 @@ class FootGui(object):
           sg.Button('Record', size=(5, 1), font='Helvetica 14'),
           sg.Button('Stop', size=(5, 1), font='Any 14'),
           sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
-          sg.Button('About', size=(5, 1), font='Any 14')
+          sg.Button('About', size=(5, 1), font='Any 14') #maybe change name??
+          sg.Button('Folder', size=(5, 1) font='Helvetica 14')
       ],
       [
           sg.T(' ' * 10)
@@ -177,11 +178,11 @@ class FootGui(object):
     return self.window.Read(timeout)
 
   def update_left(self, img_left):
-  	#begin
+  	#local rotation of the left frame
 	rows, cols= img_left.shape[:2]
 	M = cv2.getRotationMatrix2D((cols/2,rows/2), 180, 1)
 	img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
-  	#end
+  	#done
 
 	self.img_left = cv2.imencode('.png', img_left_rotated)[1]
 	self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
@@ -246,6 +247,9 @@ class FootGui(object):
     self.is_left_capturing = False
     self.is_right_capturing = False
 
+  def save_folder(self):
+  	self.folder_name = sg.PopupGetFolder('Save on folder');
+
   def close(self):
     self.window.Close()
 
@@ -290,6 +294,8 @@ def main():
         if event == 'About':
           fg.save(10)
           continue
+        if event == 'Folder':
+          fg.save_folder()		
 
       fg.stop_capturing()
       fg.stop_streaming()
