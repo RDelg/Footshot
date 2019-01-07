@@ -183,8 +183,8 @@ class FootGui(object):
 	img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
   	#end
 
-    self.img_left = cv2.imencode('.png', img_left_rotated)[1]
-    self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
+	self.img_left = cv2.imencode('.png', img_left_rotated)[1]
+	self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
 
   def update_right(self, img_right):
   	self.img_right = cv2.imencode('.png', img_right)[1].tobytes()
