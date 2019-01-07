@@ -177,18 +177,17 @@ class FootGui(object):
     return self.window.Read(timeout)
 
   def update_left(self, img_left):
-    self.img_left = cv2.imencode('.png', img_left)[1]
+  	#begin
+	rows, cols= img_left.shape[:2]
+	M = cv2.getRotationMatrix2D((cols/2,rows/2), 180, 1)
+	img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
+  	#end
+
+    self.img_left = cv2.imencode('.png', img_left_rotated)[1]
     self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
 
   def update_right(self, img_right):
-  	#begin
-	rows, cols= img_right.shape[:2]
-	M = cv2.getRotationMatrix2D((cols/2,rows/2), 180, 1)
-	img_right_rotated = cv2.warpAffine(img_right, M, (cols, rows))
-  	#end
-
-  	#back to img_right if everything goes wrong
-  	self.img_right = cv2.imencode('.png', img_right_rotated)[1].tobytes()
+  	self.img_right = cv2.imencode('.png', img_right)[1].tobytes()
 	self.window.FindElement('visual').Update(data=self.img_right)
 
   def run_left(self):
