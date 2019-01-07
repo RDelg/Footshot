@@ -189,7 +189,7 @@ class FootGui(object):
 
   	#back to img_right if everything goes wrong
   	self.img_right = cv2.imencode('.png', img_right_rotated)[1].tobytes()
-    self.window.FindElement('visual').Update(data=self.img_right)
+	self.window.FindElement('visual').Update(data=self.img_right)
 
   def run_left(self):
     if not self.is_left_capturing:
