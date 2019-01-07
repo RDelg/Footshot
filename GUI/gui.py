@@ -137,7 +137,7 @@ class FootGui(object):
           sg.Button('Record', size=(5, 1), font='Helvetica 14'),
           sg.Button('Stop', size=(5, 1), font='Any 14'),
           sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
-          sg.Button('About', size=(5, 1), font='Any 14') #maybe change name??
+          sg.Button('About', size=(5, 1), font='Any 14'), #maybe change name??
           sg.Button('Folder', size=(5, 1) font='Helvetica 14')
       ],
       [
