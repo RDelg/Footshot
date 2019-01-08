@@ -203,7 +203,7 @@ class FootGui(object):
           if self.save_left > 0:
             self.lock.acquire()
             logging.debug('Guardando imagen %s' % self.save_left)
-            self.left_dev.imwrite('IR_%s.png' % self.save_left, img_left)
+            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), img_left)
             self.save_left += -1
 
             # Update ventana de progreso
@@ -227,7 +227,7 @@ class FootGui(object):
           if self.save_right > 0:
             self.lock.acquire()
             logging.debug('Guardando imagen %s' % self.save_right)
-            self.right_dev.imwrite('VIS_%s.png' % self.save_right, img_right)
+            self.right_dev.imwrite('%sVIS_%s.png' % (self.folder_name, self.save_right), img_right)
             self.save_right += -1
             self.lock.release()
         except uvclite.UVCError as e:
