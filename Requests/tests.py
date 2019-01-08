@@ -1,4 +1,4 @@
 import requests
 
-r = requests.post('http://localhost:8000/api/tests/single', {'ayy': 'lmao'});
+r = requests.post('https://djangotesteroni.herokuapp.com/api/tests/single', {'ayy': 'lmao'});
 print(r.json())
