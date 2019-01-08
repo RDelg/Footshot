@@ -254,7 +254,8 @@ class FootGui(object):
   	if self.folder_name == '/':
   		self.folder_name = ''
 
-  	if self.folder_name != '':	
+  	if self.folder_name != '':
+  		logging.debug('creating folder: %s' % self.folder_name)	
   		os.mkdir(self.folder_name)
 
   def close(self):
@@ -305,7 +306,7 @@ def main():
           fg.save_folder()		
 
       fg.stop_capturing()
-      fg.stop_streaming()
+      fg.stop_streaming()	
       fg.close()
       sys.exit(0)
 
