@@ -138,8 +138,8 @@ class FootGui(object):
           sg.Button('Record', size=(5, 1), font='Helvetica 14'),
           sg.Button('Stop', size=(5, 1), font='Any 14'),
           sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
-          sg.Button('About', size=(5, 1), font='Any 14'), #maybe change name??
-          sg.Button('New Folder', size=(5, 1), font='Helvetica 14')
+          sg.Button('Capture', size=(5, 1), font='Any 14'), #maybe change name??
+          sg.Button('New Folder', size=(7, 1), font='Helvetica 14')
       ],
       [
           sg.T(' ' * 10)
@@ -299,7 +299,7 @@ def main():
           fg.stop_streaming()
         if event == 'Exit':
           loop = False
-        if event == 'About':
+        if event == 'Capture':
           fg.save(10)
           continue
         if event == 'New Folder':
