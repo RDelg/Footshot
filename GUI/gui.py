@@ -306,7 +306,8 @@ def main():
           fg.save_folder()		
 
       fg.stop_capturing()
-      fg.stop_streaming()	
+      fg.stop_streaming()
+      sleep(2)	
       fg.close()
       sys.exit(0)
 
