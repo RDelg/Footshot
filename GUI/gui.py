@@ -1,6 +1,7 @@
 import logging
 import threading
 import sys
+import os
 from time import sleep
 
 import cv2
@@ -248,7 +249,13 @@ class FootGui(object):
     self.is_right_capturing = False
 
   def save_folder(self):
-  	self.folder_name = sg.PopupGetFolder('Save on folder');
+  	self.folder_name = sg.PopupGetText('Select a folder name')
+  	self.folder_name += '/'
+  	if self.folder_name == '/':
+  		self.folder_name = ''
+
+  	if self.folder_name != '':	
+  		os.mkdir(self.folder_name)
 
   def close(self):
     self.window.Close()
@@ -294,7 +301,7 @@ def main():
         if event == 'About':
           fg.save(10)
           continue
-        if event == 'Folder':
+        if event == 'New Folder':
           fg.save_folder()		
 
       fg.stop_capturing()
