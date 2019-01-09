@@ -247,6 +247,8 @@ class FootGui(object):
   def stop_capturing(self):
     self.is_left_capturing = False
     self.is_right_capturing = False
+    self.left_thread.join()
+    self.right_thread.join()
 
   def save_folder(self):
   	self.folder_name = sg.PopupGetText('Select a folder name')
@@ -307,7 +309,7 @@ def main():
 
       fg.stop_capturing()
       fg.stop_streaming()
-      sleep(2)	
+      
       fg.close()
       sys.exit(0)
 
