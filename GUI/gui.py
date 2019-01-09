@@ -300,6 +300,7 @@ def main():
           fg.stop_capturing()
           fg.stop_streaming()
         if event == 'Exit' or values is None:
+          logging.debug('Closing app')		
           loop = False
         if event == 'Capture':
           fg.save(10)
