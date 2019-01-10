@@ -140,7 +140,7 @@ class FootGui(object):
           sg.Button('Stop', size=(5, 1), font='Any 14'),
           sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
           sg.Button('Capture', size=(5, 1), font='Any 14'), #maybe change name??
-          sg.Button('New Folder', size=(7, 1), font='Helvetica 14')
+          sg.Button('New Folder', size=(7, 1), font='Helvetica 14'),
           sg.Button('Save', size=(5, 1), font='Helvetica 14')  
       ],
       [
