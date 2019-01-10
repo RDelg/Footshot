@@ -206,7 +206,7 @@ class FootGui(object):
             self.lock.acquire()
             logging.debug('Guardando imagen %s' % self.save_left)
 
-            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), cv2.imdecode(self.img_left))
+            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), cv2.imdecode(self.img_left, 1))
             self.save_left += -1
 
             # Update ventana de progreso
