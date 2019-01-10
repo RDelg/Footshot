@@ -270,7 +270,7 @@ class FootGui(object):
     files = os.listdir(self.folder_name)
     aws = Foot_AWS()
     for file in files:
-    	aws.upload_file(self.folder_name + '/' + file)
+    	aws.upload_file(self.folder_name + file)
 
 
 
