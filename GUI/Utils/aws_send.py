@@ -25,6 +25,6 @@ class Foot_AWS(object):
 				print("The object does not exist.")
 			else:
 				raise
-	
-	def download_full_bucket(self):
-		#todo
+
+if __name__ == '__main__':
+	print('naiz')	
