@@ -182,8 +182,6 @@ class FootGui(object):
 
   def update_left(self, img_left):
   	#local rotation of the left frame
-	rows, cols= img_left.shape[:2]
-	M = cv2.getRotationMatrix2D((cols/2,rows/2), 180, 1)
 	img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
   	#done
 
