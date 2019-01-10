@@ -268,7 +268,10 @@ class FootGui(object):
   def upload_files(self):
     #call from utils the functions
     files = os.listdir(self.folder_name)
-    logging.debug('\n'.join(files))
+    aws = Foot_AWS()
+    for file in files:
+    	aws.upload_file(self.folder_name + '/' + file)
+
 
 
   def save(self, n_imgs):
