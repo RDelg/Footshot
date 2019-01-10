@@ -27,8 +27,5 @@ class Foot_AWS(object):
 				raise
 	
 	def download_full_bucket(self):
-		#todo 			
-
-if __name__ == '__main__':
-	print('wena men')
+		#todo
 
