@@ -15,7 +15,12 @@ class Foot_AWS(object):
 		self.s3_client.upload_file(filename, self.bucket_name, filename)
 
 	def testeroo(self):
-		return 'Sent from AWS Class!!'	
+		return 'Sent from AWS Class!!'
+
+	def list_files(self):
+		bucket = self.s3.Bucket(self.bucket_name)
+		for item in bucket.objects.all():
+			print(item)		
 
 	def download_file(self, file_key):
 		try:
@@ -27,4 +32,6 @@ class Foot_AWS(object):
 				raise
 
 if __name__ == '__main__':
-	print('naiz')	
+	aws = Foot_AWS()
+	aws.list_files()
+	
