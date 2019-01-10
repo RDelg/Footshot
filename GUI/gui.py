@@ -6,6 +6,7 @@ from time import sleep
 
 import cv2
 import numpy as np
+from Utils.aws_send import Foot_AWS
 
 import uvclite
 import PySimpleGUI27 as sg
@@ -140,6 +141,7 @@ class FootGui(object):
           sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
           sg.Button('Capture', size=(5, 1), font='Any 14'), #maybe change name??
           sg.Button('New Folder', size=(7, 1), font='Helvetica 14')
+          sg.Button('Save', size=(5, 1), font='Helvetica 14')  
       ],
       [
           sg.T(' ' * 10)
@@ -263,6 +265,12 @@ class FootGui(object):
   def close(self):
     self.window.Close()
 
+  def upload_files(self):
+    #call from utils the functions
+    aws = Foot_AWS()
+    logging.debug(aws.testeroni())
+
+
   def save(self, n_imgs):
     if self.is_left_capturing and self.is_right_capturing:
       logging.debug('Guardando %s imagenes' % n_imgs)
@@ -303,10 +311,12 @@ def main():
           logging.debug('Closing app')		
           loop = False
         if event == 'Capture':
-          fg.save(10)
+          fg.save(5)
           continue
         if event == 'New Folder':
-          fg.save_folder()		
+          fg.save_folder()
+        if event == 'Save':
+          fg.upload_files()  		
 
       fg.stop_capturing()
       fg.stop_streaming()
