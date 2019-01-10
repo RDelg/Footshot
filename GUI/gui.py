@@ -187,7 +187,7 @@ class FootGui(object):
 	img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
   	#done
 
-	self.img_left = cv2.imencode('.png', img_left_rotated)[1]
+	self.img_left = cv2.imencode('.png', img_left)[1]
 	self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
 
   def update_right(self, img_right):
@@ -205,7 +205,7 @@ class FootGui(object):
           if self.save_left > 0:
             self.lock.acquire()
             logging.debug('Guardando imagen %s' % self.save_left)
-            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), img_left)
+            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), self.img_left)
             self.save_left += -1
 
             # Update ventana de progreso
