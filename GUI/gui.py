@@ -268,7 +268,7 @@ class FootGui(object):
   def upload_files(self):
     #call from utils the functions
     aws = Foot_AWS()
-    logging.debug(aws.testeroni())
+    logging.debug(aws.testeroo())
 
 
   def save(self, n_imgs):
