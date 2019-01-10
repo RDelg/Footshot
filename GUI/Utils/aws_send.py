@@ -28,4 +28,3 @@ class Foot_AWS(object):
 	
 	def download_full_bucket(self):
 		#todo
-
