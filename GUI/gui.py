@@ -139,7 +139,7 @@ class FootGui(object):
           sg.Button('Record', size=(5, 1), font='Helvetica 14'),
           sg.Button('Stop', size=(5, 1), font='Any 14'),
           sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
-          sg.Button('Capture', size=(5, 1), font='Any 14'), #maybe change name??
+          sg.Button('Capture', size=(5, 1), font='Any 14'),
           sg.Button('New Folder', size=(7, 1), font='Helvetica 14'),
           sg.Button('Save', size=(5, 1), font='Helvetica 14')  
       ],
@@ -205,7 +205,8 @@ class FootGui(object):
           if self.save_left > 0:
             self.lock.acquire()
             logging.debug('Guardando imagen %s' % self.save_left)
-            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), self.img_left)
+
+            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), cv2.imdecode(self.img_left))
             self.save_left += -1
 
             # Update ventana de progreso
