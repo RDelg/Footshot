@@ -183,7 +183,7 @@ class FootGui(object):
 
   def update_left(self, img_left):
   	#local rotation of the left frame
-	rows, cols= img_left.shape[:2]
+	rows, cols = img_left.shape[:2]
 	M = cv2.getRotationMatrix2D((cols/2,rows/2), 180, 1)
 	img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
   	#done
@@ -269,10 +269,10 @@ class FootGui(object):
 
   def upload_files(self):
     #call from utils the functions
-    #files = os.listdir(self.folder_name)
-    #aws = Foot_AWS()
-    #for file in files:
-    #	aws.upload_file(self.folder_name + file)
+    files = os.listdir(self.folder_name)
+    aws = Foot_AWS()
+    for file in files:
+    	aws.upload_file(self.folder_name + file)
 
     data = {
     	'rut': '19073061-1',
