@@ -1,5 +1,6 @@
 import logging
 import threading
+import requests
 import sys
 import os
 from time import sleep
@@ -268,11 +269,16 @@ class FootGui(object):
 
   def upload_files(self):
     #call from utils the functions
-    files = os.listdir(self.folder_name)
-    aws = Foot_AWS()
-    for file in files:
-    	aws.upload_file(self.folder_name + file)
+    #files = os.listdir(self.folder_name)
+    #aws = Foot_AWS()
+    #for file in files:
+    #	aws.upload_file(self.folder_name + file)
 
+    data = {
+    	'rut': '19073061-1',
+    	'imagenes': self.folder_name
+    }	
+    requests.post('http://192.168.1.13:8000/api/tests/record', data)	
 
 
   def save(self, n_imgs):
