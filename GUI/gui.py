@@ -88,7 +88,9 @@ class Camera(object):
   		self.height, self.width)
 
   	if self.width != size[0] or self.height != size[1]:
-  	  img_data = cv2.resize(img_data, size)	  
+  	  img_data = cv2.resize(img_data, size)
+
+  	return img_data   
 
   def get_img_Y16(self, timeout, size=(320, 240)):
     frame = self._get_frame(timeout)
