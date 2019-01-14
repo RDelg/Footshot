@@ -94,7 +94,7 @@ class Camera(object):
     #np.right_shift(data, 8, data)
     # to RGB
     img = cv2.cvtColor(data, cv2.COLOR_GRAY2RGB)
-   	return img
+    return img
     # Normalizado
     # return cv2.imencode('.png', img)[1].tobytes()
 
