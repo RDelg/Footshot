@@ -78,6 +78,18 @@ class Camera(object):
     assert self.is_streaming, "La camara no esta en modo streaming"
     return self.device.get_frame(timeout)
 
+  #should return a 16bits grayscale denormalized img  
+  def get_raw_frame(self, timeout):
+  	frame = self._get_frame(timeout)
+  	while frame.size != (2*self.height * self.width):
+  	  frame = self._get_frame(timeout)
+
+  	img_data = np.frombuffer(frame.data, dtype=np.uint16).reshape(
+  		self.height, self.width)
+
+  	if self.width != size[0] or self.height != size[1]:
+  	  img_data = cv2.resize(data, size)	  
+
   def get_img_Y16(self, timeout, size=(320, 240)):
     frame = self._get_frame(timeout)
     # La camara no siempre devuelve un frame completo
@@ -189,8 +201,6 @@ class FootGui(object):
   	#done
   	img_color = cv2.applyColorMap(img_left_rotated, cv2.COLORMAP_JET)
 
-	self.img_left_raw = cv2.imencode('.png', img_left_rotated)[1]
-
 	self.img_left = cv2.imencode('.png', img_color)[1]
 	self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
 
@@ -204,13 +214,13 @@ class FootGui(object):
       while self.is_left_capturing and self.left_dev.is_streaming:
         try:
           img_left = self.left_dev.get_img_Y16(0)
+          img_left_raw = self.left_dev.get_raw_frame(0) 
           self.update_left(img_left)
           # Guardando imagen
           if self.save_left > 0:
             self.lock.acquire()
             logging.debug('Guardando imagen %s' % self.save_left)
-
-            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), cv2.imdecode(self.img_left_raw, 1))
+            self.left_dev.imwrite('%sIR_%s.png' % (self.folder_name, self.save_left), img_left_raw)
             self.save_left += -1
 
             # Update ventana de progreso
