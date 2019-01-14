@@ -89,9 +89,9 @@ class Camera(object):
     # Verificando reescalado
     if self.width != size[0] or self.height != size[1]:
       data = cv2.resize(data, size)
-    #cv2.normalize(data, data, 0, 65535, cv2.NORM_MINMAX)
+    cv2.normalize(data, data, 0, 65535, cv2.NORM_MINMAX)
     # 16bits a 8bits
-    #np.right_shift(data, 8, data)
+    np.right_shift(data, 8, data)
     # to RGB
     img = cv2.cvtColor(data, cv2.COLOR_GRAY2RGB)
     return img
@@ -117,7 +117,7 @@ class Camera(object):
   #     self.is_streaming == False
   #   self.device.close()
 
-
+#showing the picture vs saving the full INFRA not normalized
 class FootGui(object):
 
   _left_frame = [
