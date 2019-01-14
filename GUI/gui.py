@@ -93,9 +93,8 @@ class Camera(object):
     # 16bits a 8bits
     #np.right_shift(data, 8, data)
     # to RGB
-    # return to normal -- img = cv2.cvtColor(np.uint8(data), cv2.COLOR_GRAY2RGB)
-    # return img
-    return cv2.imdecode(data, 1)
+    img = cv2.cvtColor(data, cv2.COLOR_GRAY2RGB)
+   	return img
     # Normalizado
     # return cv2.imencode('.png', img)[1].tobytes()
 
