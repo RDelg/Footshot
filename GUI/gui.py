@@ -89,12 +89,13 @@ class Camera(object):
     # Verificando reescalado
     if self.width != size[0] or self.height != size[1]:
       data = cv2.resize(data, size)
-    cv2.normalize(data, data, 0, 65535, cv2.NORM_MINMAX)
+    #cv2.normalize(data, data, 0, 65535, cv2.NORM_MINMAX)
     # 16bits a 8bits
-    np.right_shift(data, 8, data)
+    #np.right_shift(data, 8, data)
     # to RGB
-    img = cv2.cvtColor(np.uint8(data), cv2.COLOR_GRAY2RGB)
-    return img
+    # return to normal -- img = cv2.cvtColor(np.uint8(data), cv2.COLOR_GRAY2RGB)
+    # return img
+    return cv2.imdecode(data, 1)
     # Normalizado
     # return cv2.imencode('.png', img)[1].tobytes()
 
