@@ -1,7 +1,7 @@
-import requests
-data = {
-	'rut': '19073061-1',
-	'imagenes': 'foldername34/'
-}
-r = requests.post('http://192.168.1.13:8000/api/tests/record', data);
-print(r.json())
+import cv2
+import numpy
+from matplotlib import pyplot as plt
+
+img = cv2.imread('IR_1.png', 0)
+plt.hist(img.ravel(), 256, [0, 256])
+plt.show()

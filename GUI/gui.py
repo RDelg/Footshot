@@ -90,8 +90,8 @@ class Camera(object):
     if self.width != size[0] or self.height != size[1]:
       data = cv2.resize(data, size)
     cv2.normalize(data, data, 0, 65535, cv2.NORM_MINMAX)
-    # 16bits a 8bits
-    np.right_shift(data, 8, data)
+    # 16bits a 8bits (is this necessary??)
+    # np.right_shift(data, 8, data)
     # to RGB
     img = cv2.cvtColor(np.uint8(data), cv2.COLOR_GRAY2RGB)
     return img
@@ -281,7 +281,7 @@ class FootGui(object):
     	'rut': '19073061-1',
     	'imagenes': self.folder_name
     }	
-    requests.post('http://192.168.1.13:8000/api/tests/record', data)	
+    requests.post('http://192.168.1.46:8000/api/tests/record', data)	
 
 
   def save(self, n_imgs):
