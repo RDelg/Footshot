@@ -189,7 +189,7 @@ class FootGui(object):
   	#done
 
 	self.img_left_raw = cv2.imencode('.png', img_left_rotated)[1]
-	self.img_left = cv2.applyColorMap(self.img_left_raw, COLORMAP_JET)
+	self.img_left = cv2.applyColorMap(self.img_left_raw, cv2.COLORMAP_JET)
 	self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
 
   def update_right(self, img_right):
