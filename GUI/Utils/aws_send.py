@@ -17,8 +17,8 @@ class Foot_AWS(object):
 			self.s3_client.upload_file(filename, self.bucket_name, filename)
 			return True
 		except self.s3_client.meta.client.exceptions.EndpointConnectionError as e:
-			if e.response['Error']['Code'] == "E":
-				return False	
+			print("Error...")
+			return False	
 
 	def testeroo(self):
 		return 'Sent from AWS Class!!'
