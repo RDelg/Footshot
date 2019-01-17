@@ -293,7 +293,7 @@ class FootGui(object):
     for file in files:
     	resp = aws.upload_file(self.folder_name + file)
     	if resp == False:
-    		self.window3 = sg.Popup('Error', 'No hay conexión a internet.')
+    		self.window3 = sg.Popup('Error', 'No hay conexion a internet.')
     		return
 
     data = {
