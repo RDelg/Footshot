@@ -25,8 +25,13 @@ print type(carpeta)
 while True:
 
     # Se leen las imagenes a procesar
-    img = cv2.imread('./%s/IR_2.png' % carpeta, 0)
+    img = cv2.imread('./%s/IR_2.png' % carpeta, -1)
     img_visual = cv2.imread('./%s/VIS_2.png' % carpeta, 0)
+
+    cv2.normalize(img, img, 0, 65535, cv2.NORM_MINMAX)
+    #rows1, cols1 = img.shape[:2]
+    #M = cv2.getRotationMatrix2D((cols1/2,rows1/2), 180, 1)
+    #img_rotated = cv2.warpAffine(img, M, (cols1, rows1))
 
     leer = raw_input('Leer datos de calibracion si/no:')
     if leer == "si":
@@ -49,10 +54,13 @@ while True:
             cv2.waitKey(1)
 
             for x1, y1 in coordinateStore1.points_ir:
+                #print("%s %s" % (x1, y1))
                 cv2.circle(img, (x1, y1), 10, (255, 0, 255))
 
             for x2, y2 in coordinateStore1.points_vis:
+                #print("%s %s" % (x2, y2))
                 cv2.circle(img_visual, (x2, y2), 10, (255, 0, 255))
+
             if len(coordinateStore1.points_ir) & len(coordinateStore1.points_vis) == 5:
                 points_vis = coordinateStore1.points_vis
                 points_ir = coordinateStore1.points_ir
@@ -77,22 +85,23 @@ points2 = array([points_vis]).astype(np.float32)
 
 
 # Se calcula la matriz de Transformacion
-transformation = cv2.estimateRigidTransform(points1, points2, False)
-print transformation
+transformation = cv2.estimateAffinePartial2D(points1, points2, False)
+print transformation[0]
 rows, cols = img.shape[:2]
+print("cols = %s, rows = %s" % (cols, rows))
 
 # Se obtiene imagen regenerada
-ir_transf = cv2.warpAffine(img_visual, transformation, (cols, rows))
+ir_transf = cv2.warpAffine(img_vis, transformation[0], (cols, rows))
 
 
-#cv2.namedWindow('Warp_Visual')
+cv2.namedWindow('Warp_Visual')
 cv2.setMouseCallback('Warp_Visual', coordinateStore1.select_point_trans)
 cv2.destroyAllWindows()
 i = 0
-while True:
+while i < 5:
     i = i + 1
     img_visual, ir = thershold.readImage(i, carpeta)
-    ir_transf = cv2.warpAffine(ir, transformation, (cols, rows))
+    ir_transf = cv2.warpAffine(ir, transformation[0], (cols, rows))
     vis_green = thershold.green(img_visual)
     green_close = thershold.open_close(vis_green)
     green_gray = thershold.convertGray(green_close)
@@ -100,6 +109,8 @@ while True:
     green_color = thershold.convertRGB(green_gray)
     result_vis, result_vis_gray, crops_vis = thershold.drawContour(img_visual, contour)
     result_ir, result_ir_gray, crops_ir = thershold.drawContour(ir_transf, contour)
+    print('crops %s' % i)
+    print(crops_ir)
     diference = thershold.compare(crops_ir[0], crops_ir[1])
     cv2.imshow('Diference', diference)
     #cv2.moveWindow('Diference', 3200, 1500)

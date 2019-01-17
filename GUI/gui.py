@@ -277,8 +277,11 @@ class FootGui(object):
   		self.folder_name = ''
 
   	if self.folder_name != '':
-  		logging.debug('creating folder: %s' % self.folder_name)	
-  		os.mkdir(self.folder_name)
+  		logging.debug('creating folder: %s' % self.folder_name)
+  		try:	
+  			os.mkdir(self.folder_name)
+  		except OSError:
+  			print('La carpeta ya existe, será seleccionada.')	
 
   def close(self):
     self.window.Close()
@@ -288,7 +291,10 @@ class FootGui(object):
     files = os.listdir(self.folder_name)
     aws = Foot_AWS()
     for file in files:
-    	aws.upload_file(self.folder_name + file)
+    	resp = aws.upload_file(self.folder_name + file)
+    	if resp == False:
+    		self.window3 = sg.Popup('Error', 'No hay conexión a internet.')
+    		return
 
     data = {
     	'rut': '19073061-1',

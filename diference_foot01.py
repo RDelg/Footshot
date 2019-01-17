@@ -58,6 +58,7 @@ while True:
 
             for x2, y2 in coordinateStore1.points_vis:
                 cv2.circle(img_visual, (x2, y2), 10, (255, 0, 255))
+
             if len(coordinateStore1.points_ir) & len(coordinateStore1.points_vis) == 5:
                 points_vis = coordinateStore1.points_vis
                 points_ir = coordinateStore1.points_ir

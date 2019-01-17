@@ -80,7 +80,7 @@ class thershold:
                 rect = cv2.minAreaRect(c)
                 crop = self.crop_foot(gray_img, rect)
                 crops.append(crop)
-                box = cv2.cv.BoxPoints(rect)
+                box = cv2.boxPoints(rect)
                 box = np.int0(box)
 
                 rois = np.append(self.rois, [box[0], box[2]])
@@ -112,7 +112,7 @@ class thershold:
     def crop_foot(self, img, rect):
 
         mult = 1.2
-        box = cv2.cv.BoxPoints(rect)
+        box = cv2.boxPoints(rect)
         box = np.int0(box)
         #cv2.drawContours(img, [box], 0, (0, 255, 0), 2)  # this was mostly for debugging you may omit
 
