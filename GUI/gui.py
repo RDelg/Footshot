@@ -281,7 +281,7 @@ class FootGui(object):
   		try:	
   			os.mkdir(self.folder_name)
   		except OSError:
-  			print('La carpeta ya existe, será seleccionada.')	
+  			print('La carpeta ya existe, sera seleccionada.')	
 
   def close(self):
     self.window.Close()
