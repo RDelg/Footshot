@@ -23,7 +23,7 @@ class Foot_AWS(object):
 		try:
 			self.s3_client.upload_file(filename, self.bucket_name, filename)
 			return True
-		except botocore.exceptions.ClientError as e:
+		except Exception as e:
 			print("Error...")
 			return False	
 
