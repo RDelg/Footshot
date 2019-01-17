@@ -1,5 +1,6 @@
 import boto3
 import botocore
+from botocore.client import Config
 import os
 #creating a bucket (dunno if can create 'sub-buckets')
 '''s3 = boto3.resource('s3')
@@ -8,8 +9,9 @@ s3.create_bucket(Bucket='newbucketforfootshot')
 class Foot_AWS(object):
 	def __init__(self, bucket_name = 'newbucketforfootshot'):
 		try:
-			self.s3 = boto3.resource('s3')
-			self.s3_client = boto3.client('s3')
+			config = Config(connect_timeout=5, retries={'max_attempts': 0})
+			self.s3 = boto3.resource('s3', config=config)
+			self.s3_client = boto3.client('s3', config=config)
 			self.connected = True
 		except Exception as e:
 			print('Error')
