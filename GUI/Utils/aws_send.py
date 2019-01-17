@@ -21,7 +21,7 @@ class Foot_AWS(object):
 		try:
 			self.s3_client.upload_file(filename, self.bucket_name, filename)
 			return True
-		except self.s3_client.meta.client.exceptions.EndpointConnectionError as e:
+		except botocore.exceptions.ClientError as e:
 			print("Error...")
 			return False	
 
