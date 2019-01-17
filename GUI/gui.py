@@ -290,6 +290,10 @@ class FootGui(object):
     #call from utils the functions
     files = os.listdir(self.folder_name)
     aws = Foot_AWS()
+
+    if aws.connected == False
+    	self.window3 = sg.Popup('Error', 'No hay conexion a internet.')
+
     for file in files:
     	resp = aws.upload_file(self.folder_name + file)
     	if resp == False:

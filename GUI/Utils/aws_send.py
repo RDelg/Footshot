@@ -7,10 +7,15 @@ s3.create_bucket(Bucket='newbucketforfootshot')
 '''
 class Foot_AWS(object):
 	def __init__(self, bucket_name = 'newbucketforfootshot'):
-		self.s3 = boto3.resource('s3')
-		self.s3_client = boto3.client('s3')
-
-		self.bucket_name = bucket_name 
+		try:
+			self.s3 = boto3.resource('s3')
+			self.s3_client = boto3.client('s3')
+			self.connected = True
+		except Exception as e:
+			print('Error')
+			self.connected = False
+		finally:		
+			self.bucket_name = bucket_name 
 
 	def upload_file(self, filename):
 		try:
