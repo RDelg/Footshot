@@ -291,7 +291,7 @@ class FootGui(object):
     files = os.listdir(self.folder_name)
     aws = Foot_AWS()
 
-    if aws.connected == False
+    if aws.connected == False:
     	self.window3 = sg.Popup('Error', 'No hay conexion a internet.')
 
     for file in files:
