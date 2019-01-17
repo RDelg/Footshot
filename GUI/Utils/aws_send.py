@@ -16,8 +16,8 @@ class Foot_AWS(object):
 		try:
 			self.s3_client.upload_file(filename, self.bucket_name, filename)
 			return True
-		except botocore.exceptions.ClientError as e:
-			if e.response['Error']['Code'] == "RequestTimeout":
+		except self.s3_client.meta.client.exceptions.EndpointConnectionError as e:
+			if e.response['Error']['Code'] == "E":
 				return False	
 
 	def testeroo(self):
