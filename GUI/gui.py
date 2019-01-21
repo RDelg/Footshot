@@ -258,10 +258,12 @@ class FootGui(object):
   def start_capturing(self, sync=False):
     self.left_thread = threading.Thread(
         name='Carama izquierda', target=self.run_left)
+    self.left_thread.daemon = True
     self.left_thread.start()
 
     self.right_thread = threading.Thread(
         name="Camara derecha", target=self.run_right)
+    self.right_thread.daemon = True
     self.right_thread.start()
 
   def stop_capturing(self):

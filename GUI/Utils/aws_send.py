@@ -8,6 +8,7 @@ s3.create_bucket(Bucket='newbucketforfootshot')
 class Foot_AWS(object):
 	def __init__(self, bucket_name = 'newbucketforfootshot'):
 		#tries to ping
+		#because AWS API exception handling sucks
 		conn = os.system("ping -c 1 aws.amazon.com")
 
 		if conn == 0:
