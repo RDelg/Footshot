@@ -276,7 +276,7 @@ class FootGui(object):
   	if self.folder_name == '/':
   		self.folder_name = ''
 
-  	if self.folder_name != '':
+  	if self.folder_name != '' or self.folder_name is None:
   		logging.debug('creating folder: %s' % self.folder_name)
   		try:	
   			os.mkdir(self.folder_name)
@@ -293,13 +293,11 @@ class FootGui(object):
 
     if aws.connected == False:
     	self.window3 = sg.Popup('Error', 'No hay conexion a internet.')
+    	return
 
     for file in files:
-    	resp = aws.upload_file(self.folder_name + file)
-    	if resp == False:
-    		self.window3 = sg.Popup('Error', 'No hay conexion a internet.')
-    		return
-
+    	aws.upload_file(self.folder_name + file)
+    	
     data = {
     	'rut': '19073061-1',
     	'imagenes': self.folder_name

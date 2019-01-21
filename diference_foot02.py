@@ -61,7 +61,7 @@ while True:
                 #print("%s %s" % (x2, y2))
                 cv2.circle(img_visual, (x2, y2), 10, (255, 0, 255))
 
-            if len(coordinateStore1.points_ir) & len(coordinateStore1.points_vis) == 5:
+            if len(coordinateStore1.points_ir) & len(coordinateStore1.points_vis) == 10:
                 points_vis = coordinateStore1.points_vis
                 points_ir = coordinateStore1.points_ir
                 cv2.destroyAllWindows()
