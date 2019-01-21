@@ -342,7 +342,9 @@ def main():
           fg.stop_capturing()
           fg.stop_streaming()
         if event == 'Exit' or values is None:
-          logging.debug('Closing app')		
+          logging.debug('Closing app')
+          fg.stop_capturing()
+          fg.stop_streaming()		
           loop = False
         if event == 'Capture':
           fg.save(5)
@@ -352,9 +354,7 @@ def main():
         if event == 'Save':
           fg.upload_files()  		
 
-      fg.stop_capturing()
-      fg.stop_streaming()
-      sleep(3)
+      sleep(1)
       fg.close()
       sys.exit(0)
 
