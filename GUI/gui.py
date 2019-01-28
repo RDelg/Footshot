@@ -272,11 +272,11 @@ class FootGui(object):
 
   def save_folder(self):
   	self.folder_name = sg.PopupGetText('Select a folder name')
-  	self.folder_name += '/'
-  	if self.folder_name == '/':
+  	if self.folder_name == '' or self.folder_name is None:
   		self.folder_name = ''
 
-  	if self.folder_name != '' or self.folder_name is None:
+  	if self.folder_name != '':
+  		self.folder_name += '/'
   		logging.debug('creating folder: %s' % self.folder_name)
   		try:	
   			os.mkdir(self.folder_name)
