@@ -1,53 +1,85 @@
-import cv2 
+import logging
+import cv2
 import numpy as np
 
+import uvclite
 
-class Camera(object):
-	def __init__(self, cam_id, fps=30, resolution=(320, 240)):
-		self.cap = cv2.VideoCapture(cam_id)
-		assert self.cap.isOpened()
-		self.resolution = resolution
-		self.fps = fps
-		self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-		self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
-		self.cap.set(cv2.CAP_PROP_FPS, fps)
-		self.cap.set(cv2.CAP_PROP_FORMAT, cv2.CV_16U)
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s: [%(levelname)s] (%(threadName)-10s) %(message)s'
+                    )
 
-		self.frame = 0
+class ThermalCamera(object):
+    _Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
 
-	def get_frame(self):
-		ret, frame = self.cap.read()
-		if not ret:
-			return None
-		#flips?
-		self.frame += 1
-		return frame
+    def __init__(self, context, vendor_id=0, product_id=0, width=160, height=120, fps=9):
+        self.context = context
+        self.vendor_id = vendor_id
+        self.product_id = product_id
+        self.fps = fps
+        self.width = width
+        self.height = height
+        self.frame_format = _Y16
+        self._find_device()
+        self._open()
+        self._set_stream_format()
 
-	def stop(self):
-		self.cap.release()
+        self.is_streaming = False
 
-def save_frame(img):
-	cv2.imwrite('wew.png', img)			
-			
+    def _open(self):
+        self.device.open()
+
+    def _find_devices(self):
+        self.device = self.context.find_device(self.vendor_id, self.product_id)
+
+    def _set_stream_format(self):
+        self.device.set_stream_format(
+            self.frame_format, self.width,
+            self.height, self.fps
+            )
+
+    def start_streaming(self):
+        if not self.is_streaming:
+            self.device.start_streaming()
+            self.is_streaming = True
+
+    def stop_streaming(self):
+        if self.is_streaming:
+            self.device.stop_streaming()
+            self.is_streaming = False
+
+    def _get_frame(self, timeout):
+        assert self.is_streaming "Not streaming"
+        return self.device.get_frame(timeout)
+
+    def normalize(self, img):
+        normalized = None
+        cv2.normalize(img, normalized, 0, 65535, cv2.NORM_MINMAX)
+        np.right_shift(normalized, 8, normalized)
+        normalized = cv2.cvtColor(np.uint(normalized), cv2.COLOR_GRAY2RGB)
+        return normalized
+
+    def get_img_Y16(self, timeout, size=(320, 240)):
+        frame = self._get_frame(timeout)
+        while frame.size != (2 * self.height * self.width):
+            frame = self._get_frame(timeout)
+
+        data = np.frombuffer(frame.data, dtype=np.uint16)
+                        .reshape(self.height, self.width)
+        if self.width != size[0] or self.height != size[1]:
+            data = cv2.resize(data, size)
+
+        return data
+
 if __name__ == '__main__':
-	cam = Camera(1)
+    with uvclite.UVCContext() as context:
+        cam = ThermalCamera(context, 0x1e4e, 0x0100)
+        cam.start_streaming()
 
-	cv2.namedWindow('wat', cv2.WINDOW_NORMAL)
-	while True:
-		img = cam.get_frame()
-		if img is None:
-			break
-		
-		cv2.imshow('wat', img)
-		order = cv2.waitKey(1) & 0xFF 
+        while True:
+            img = cam.get_img_Y16(0)
+            img = cam.normalize(img)
 
-		if order == ord('q'):
-			break
+            cv2.imshow('img', img)
 
-		elif order == ord('s'):
-			save_frame(img)
-
-	cam.stop()
-	cv2.destroyAllWindows()		
-
-				
+        cam.stop_streaming()
+        cv2.destroyAllWindows()
