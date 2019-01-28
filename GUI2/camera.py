@@ -11,6 +11,8 @@ class Camera(object):
 		self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
 		self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
 		self.cap.set(cv2.CAP_PROP_FPS, fps)
+		self.cap.set(cv2.CAP_PROP_CONVERT_RGB, False)
+
 		self.frame = 0
 
 	def get_frame(self):
@@ -28,7 +30,7 @@ def save_frame(img):
 	cv2.imwrite('wew.png', img)			
 			
 if __name__ == '__main__':
-	cam = Camera(0)
+	cam = Camera(1)
 
 	cv2.namedWindow('wat', cv2.WINDOW_NORMAL)
 	while True:
