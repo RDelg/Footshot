@@ -29,7 +29,7 @@ class ThermalCamera(object):
     def _open(self):
         self.device.open()
 
-    def _find_devices(self):
+    def _find_device(self):
         self.device = self.context.find_device(self.vendor_id, self.product_id)
 
     def _set_stream_format(self):
