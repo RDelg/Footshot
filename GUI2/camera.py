@@ -81,6 +81,7 @@ if __name__ == '__main__':
                 img = cam.normalize(img)
 
                 cv2.imshow('img', img)
+                cv2.waitKey(1)
             except uvclite.UVCError as e:
                 print(e)
             except Exception as e:
