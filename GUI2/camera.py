@@ -1,26 +1,51 @@
 import cv2 
 import numpy as np
 
-WIDTH = 3
-HEIGHT = 4
 
-cap = cv2.VideoCapture(0)
-cap.set(WIDTH, 320)
-cap.set(HEIGHT, 240)
+class Camera(object):
+	def __init__(self, cam_id, fps=30, resolution=(320, 240)):
+		self.cap = cv2.VideoCapture(cam_id)
+		assert self.cap.isOpened()
+		self.resolution = resolution
+		self.fps = fps
+		self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
+		self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+		self.cap.set(cv2.CAP_PROP_FPS, fps)
+		self.frame = 0
 
-frame = 0
-while(True):
-	ret, frame = cap.read()
-	frame = cv2.flip(frame, 1)
+	def get_frame(self):
+		ret, frame = self.cap.read()
+		if not ret:
+			return None
+		#flips?
+		self.frame += 1
+		return frame
 
-	cv2.imshow('frame', frame)
-	if cv2.waitKey(1) & 0xFF == ord('q'):
-		break
+	def stop(self):
+		self.cap.release()
 
-	frame += 1
-	
-cap.release()
-cv2.destroyAllWindows()
+def save_frame(img):
+	cv2.imwrite('wew.png', img)			
+			
+if __name__ == '__main__':
+	cam = Camera(0)
 
+	cv2.namedWindow('wat', cv2.WINDOW_NORMAL)
+	while True:
+		img = cam.get_frame()
+		if img is None:
+			break
+		
+		cv2.imshow('wat', img)
+		order = cv2.waitKey(1) & 0xFF 
+
+		if order == ord('q'):
+			break
+
+		elif order == ord('s'):
+			save_frame(img)
+
+	cam.stop()
+	cv2.destroyAllWindows()		
 
 				
