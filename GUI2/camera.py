@@ -11,7 +11,7 @@ class Camera(object):
 		self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
 		self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
 		self.cap.set(cv2.CAP_PROP_FPS, fps)
-		self.cap.set(cv2.CAP_PROP_CONVERT_RGB, False)
+		self.cap.set(cv2.CAP_PROP_FORMAT, cv2.CV_16U)
 
 		self.frame = 0
 
