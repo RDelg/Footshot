@@ -48,7 +48,7 @@ class ThermalCamera(object):
             self.is_streaming = False
 
     def _get_frame(self, timeout):
-        assert self.is_streaming "Not streaming"
+        assert(self.is_streaming, "Not streaming")
         return self.device.get_frame(timeout)
 
     def normalize(self, img):
