@@ -77,10 +77,15 @@ if __name__ == '__main__':
         cam.start_streaming()
 
         while True:
-            img = cam.get_img_Y16(0)
-            img = cam.normalize(img)
+            try:
+                img = cam.get_img_Y16(0)
+                img = cam.normalize(img)
 
-            cv2.imshow('img', img)
+                cv2.imshow('img', img)
+            except uvclite.UVCError as e:
+                print(e)
+            except Exception as e:
+                print(e)
 
         cam.stop_streaming()
         cv2.destroyAllWindows()
