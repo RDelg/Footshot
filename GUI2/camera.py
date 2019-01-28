@@ -55,7 +55,7 @@ class ThermalCamera(object):
     def normalize(self, img):
         cv2.normalize(img, img, 0, 65535, cv2.NORM_MINMAX)
         np.right_shift(img, 8, img)
-        img = cv2.cvtColor(np.uint(img), cv2.COLOR_GRAY2RGB)
+        img = cv2.cvtColor(np.uint8(img), cv2.COLOR_GRAY2RGB)
         return img
 
     def get_img_Y16(self, timeout, size=(320, 240)):
