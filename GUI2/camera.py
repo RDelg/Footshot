@@ -63,8 +63,8 @@ class ThermalCamera(object):
         while frame.size != (2 * self.height * self.width):
             frame = self._get_frame(timeout)
 
-        data = np.frombuffer(frame.data, dtype=np.uint16)
-                        .reshape(self.height, self.width)
+        data = np.frombuffer(frame.data, dtype=np.uint16).reshape(
+            self.height, self.width)
         if self.width != size[0] or self.height != size[1]:
             data = cv2.resize(data, size)
 
