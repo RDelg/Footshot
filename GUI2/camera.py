@@ -9,9 +9,10 @@ logging.basicConfig(level=logging.DEBUG,
                     )
 
 class ThermalCamera(object):
-    _Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
 
     def __init__(self, context, vendor_id=0, product_id=0, width=160, height=120, fps=9):
+        _Y16 = uvclite.libuvc.uvc_frame_format.UVC_FRAME_FORMAT_Y16
+
         self.context = context
         self.vendor_id = vendor_id
         self.product_id = product_id
@@ -48,7 +49,7 @@ class ThermalCamera(object):
             self.is_streaming = False
 
     def _get_frame(self, timeout):
-        assert(self.is_streaming, "Not streaming")
+        assert self.is_streaming, "Not streaming"
         return self.device.get_frame(timeout)
 
     def normalize(self, img):
