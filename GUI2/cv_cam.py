@@ -7,8 +7,8 @@ class CvCamera(object):
 		assert self.cap.isOpened(), "Camera not found..."
 		self.resolution = resolution
 		self.fps = fps
-		self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-		self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+		self.cap.set(3, resolution[0])
+		self.cap.set(4, resolution[1])
 		self.cap.set(cv2.CAP_PROP_FPS, fps)
 		self.frame = 0
 
