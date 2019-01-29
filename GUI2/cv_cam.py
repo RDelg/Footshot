@@ -26,7 +26,6 @@ class CvCamera(object):
 
 if __name__ == '__main__':
 	cam = CvCamera(0)
-
 	cv2.namedWindow('wat', cv2.WINDOW_NORMAL)
 	while True:
 		img = cam.get_frame()

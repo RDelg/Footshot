@@ -6,6 +6,8 @@ import os
 import cv2
 
 from cv_cam import CvCamera
+from ir_cam import ThermalCamera
+import uvclite
 
 class GUI(object):
 
@@ -34,23 +36,24 @@ class GUI(object):
 	]
 
 	def __init__(self, camera):
-		self.window = sg.Window('Testing window').Layout(self._layout)
-		self.login = sg.Window('Footshot').Layout(self._form_layout)
+		self.window = sg.Window('Testing window').Layout(self._layout).Finalize()
+		#self.login = sg.Window('Footshot').Layout(self._form_layout)
 		self.visual_cam = camera
 		self.thread = threading.Thread(name="test", target=self.run)
 		self.running = True
+		self.visual_cam.start_streaming()
 		self.thread.start()
 
 	def update(self, image):
 		#self.image = image
-		self.image = cv2.imencode('.png', image)[1].tobytes()
+		self.norm = self.visual_cam.normalize(image)
+		self.image = cv2.imencode('.png', norm)[1].tobytes()
 		self.window.FindElement('thermal').Update(data=self.image)
 
 	def run(self):
 		while self.running:
 			try:
-				image = self.visual_cam.get_frame()
-				print(image)
+				image = self.visual_cam.get_img_Y16()
 				self.update(image)
 			except Exception as e:
 				print(e)	
@@ -61,8 +64,8 @@ class GUI(object):
 	def close(self):
 		self.running = False
 		self.thread.join()
-
-		self.visual_cam.stop()
+		cv2.destroyAllWindows()
+		self.visual_cam.stop_streaming()
 		self.window.Close()
 
 	#login window methods
@@ -73,27 +76,27 @@ class GUI(object):
 		self.login.Close()
 
 def footshot():
-	cam = CvCamera(0)
-	win = GUI(cam)
-	failed = False
+	with uvclite.UVCContext() as context:
+		cam = ThermalCamera(context, 0x1e4e, 0x0100)
+		win = GUI(cam)
+		failed = False
+		'''
+		while True:
+			event, values = win.log_credentials()
+			if event is None or event == 'Salir':
+				failed = True
+				return
+			elif event == 'Entrar':	
+				print(values)
+				win.login_close()
+				break
+		'''
+		while not failed:
+			event, values = win.read()
+			if event is None or event == 'Exit':
+				break
 
-	while True:
-		event, values = win.log_credentials()
-		if event is None or event == 'Salir':
-			failed = True
-			return
-		elif event == 'Entrar':	
-			print(values)
-			win.login_close()
-			break
-
-	while not failed:
-		event, values = win.read()
-		if event is None or event == 'Exit':
-			break
-		print(values)
-
-	win.close()
+		win.close()
 
 if __name__ == '__main__':
 	footshot()
