@@ -24,9 +24,10 @@ class GUI(object):
 					sg.Frame('Visual', [],
 								font='Any 12', title_color='blue')
 				],
-				[sg.Text('Window')],
-				[sg.Input(do_not_clear=True)],
-				[sg.Button('Read'), sg.Exit()]
+				[	sg.Text('Window'),
+					sg.Input(do_not_clear=True),
+					sg.Button('Read'), sg.Exit()
+				]
 			  ]
 
 	_form_layout = [
