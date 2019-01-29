@@ -53,7 +53,7 @@ class GUI(object):
 	def run(self):
 		while self.running:
 			try:
-				image = self.visual_cam.get_img_Y16()
+				image = self.visual_cam.get_img_Y16(3)
 				self.update(image)
 			except Exception as e:
 				print(e)	
