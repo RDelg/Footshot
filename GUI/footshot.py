@@ -330,7 +330,7 @@ def main():
 
     failed = True
     while True:
-        event, values = login.read()
+        event, values = login.Read()
         if event is None: break
         print(event, values)
 
