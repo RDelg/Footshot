@@ -328,11 +328,15 @@ def main():
                         [sg.Submit(), sg.Cancel()]
                         ])
 
-    failed = True
+    failed = False
     while True:
         event, values = login.Read()
-        if event is None: break
-        print(event, values)
+        if event == 'Cancel' or event is None:
+            failed = True
+            break
+        elif event == 'Submit':
+            print(values)
+            break
 
     if failed: sys.exit(0)
     with uvclite.UVCContext() as context:
