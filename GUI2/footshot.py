@@ -4,6 +4,7 @@ import threading
 import sys
 import os
 import cv2
+from time import sleep
 
 from cv_cam import CvCamera
 from ir_cam import ThermalCamera
