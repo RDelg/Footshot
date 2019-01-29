@@ -338,6 +338,7 @@ def main():
             print(values)
             break
 
+    login.Close()
     if failed: sys.exit(0)
     with uvclite.UVCContext() as context:
         try:
