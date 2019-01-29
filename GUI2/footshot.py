@@ -196,18 +196,18 @@ class FootGui(object):
 
     def update_left(self, img_left):
         #local rotation of the left frame
-    rows, cols = img_left.shape[:2]
-    M = cv2.getRotationMatrix2D((cols/2,rows/2), 180, 1)
-    img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
+        rows, cols = img_left.shape[:2]
+        M = cv2.getRotationMatrix2D((cols/2,rows/2), 180, 1)
+        img_left_rotated = cv2.warpAffine(img_left, M, (cols, rows))
         #done
         img_color = cv2.applyColorMap(img_left_rotated, cv2.COLORMAP_JET)
 
-    self.img_left = cv2.imencode('.png', img_color)[1]
-    self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
+        self.img_left = cv2.imencode('.png', img_color)[1]
+        self.window.FindElement('infrarrojo').Update(data=self.img_left.tobytes())
 
     def update_right(self, img_right):
         self.img_right = cv2.imencode('.png', img_right)[1].tobytes()
-    self.window.FindElement('visual').Update(data=self.img_right)
+        self.window.FindElement('visual').Update(data=self.img_right)
 
     def run_left(self):
         if not self.is_left_capturing:
