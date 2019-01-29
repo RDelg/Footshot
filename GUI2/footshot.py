@@ -83,6 +83,7 @@ def footshot():
 	with uvclite.UVCContext() as context:
 		cam = ThermalCamera(context, 0x1e4e, 0x0100)
 		win = GUI(cam)
+		win.start()
 		failed = False
 		'''
 		while True:
