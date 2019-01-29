@@ -58,7 +58,7 @@ class ThermalCamera(object):
         img = cv2.cvtColor(np.uint8(img), cv2.COLOR_GRAY2RGB)
         return img
 
-    def get_img_Y16(self, timeout, size=(320, 240)):
+    def get_img_Y16(self, timeout = 0, size=(320, 240)):
         frame = self._get_frame(timeout)
         while frame.size != (2 * self.height * self.width):
             frame = self._get_frame(timeout)
