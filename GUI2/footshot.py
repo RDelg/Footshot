@@ -40,8 +40,12 @@ class GUI(object):
 		#self.login = sg.Window('Footshot').Layout(self._form_layout)
 		self.visual_cam = camera
 		self.thread = threading.Thread(name="test", target=self.run)
-		self.running = True
+		
+
+	def start(self):
+		sleep(1)
 		self.visual_cam.start_streaming()
+		self.running = True
 		self.thread.start()
 
 	def update(self, image):
@@ -53,7 +57,7 @@ class GUI(object):
 	def run(self):
 		while self.running:
 			try:
-				image = self.visual_cam.get_img_Y16(3)
+				image = self.visual_cam.get_img_Y16()
 				self.update(image)
 			except Exception as e:
 				print(e)	
