@@ -9,7 +9,7 @@ class CvCamera(object):
 		self.fps = fps
 		self.cap.set(3, resolution[0])
 		self.cap.set(4, resolution[1])
-		self.cap.set(cv2.CAP_PROP_FPS, fps)
+		self.cap.set(5, fps)
 		self.frame = 0
 
 	def get_frame(self):
