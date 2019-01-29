@@ -46,7 +46,7 @@ class GUI(object):
 
 	def update(self, image):
 		#self.image = image
-		self.norm = self.visual_cam.normalize(image)
+		norm = self.visual_cam.normalize(image)
 		self.image = cv2.imencode('.png', norm)[1].tobytes()
 		self.window.FindElement('thermal').Update(data=self.image)
 
