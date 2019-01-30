@@ -157,7 +157,7 @@ class FootGui(object):
                     sg.Button('Analyze', size=(5, 1), font='Helvetica 14'),
                     sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
                     sg.T(' ' * 10),
-                    sg.Button('Send PDF', size(5, 1), font='Helvetica 14')
+                    sg.Button('Send PDF', size=(5, 1), font='Helvetica 14')
             ],
             [
                     sg.T(' ' * 10)
