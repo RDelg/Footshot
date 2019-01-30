@@ -290,7 +290,7 @@ class FootGui(object):
     def downloadPDF(self, pdfname):
         ip = "http://192.168.1.186:8000/api/tests/renderpdf"
         call = "curl %s --silent --output %s.pdf" % (ip, pdfname)
-        self.downloadWindow = sg.Popup('Footshot', 'Descargando PDF...', non_blocking=True)
+        self.downloadWindow = sg.PopupNoWait('Descargando PDF...')
         os.system(call)
         self.downloadWindow.Close()
         sg.Popup('Footshot', 'Descarga finalizada')
