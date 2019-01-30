@@ -291,8 +291,12 @@ class FootGui(object):
         ip = "http://192.168.1.186:8000/api/tests/renderpdf"
         call = "curl %s --silent --output %s.pdf" % (ip, pdfname)
         self.downloadWindow = sg.PopupNoWait('Descargando PDF...')
-        os.system(call)
-        succ = sg.Popup('Footshot', 'Descarga finalizada')
+        response = os.system(call)
+        if response == 0:
+            succ = sg.Popup('Footshot', 'Descarga finalizada')
+        else:
+            print("Nani!?")    
+        
 
     def upload_files(self):
         #call from utils the functions
