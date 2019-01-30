@@ -155,7 +155,9 @@ class FootGui(object):
                     sg.Button('New Folder', size=(7, 1), font='Helvetica 14'),
                     sg.Button('Capture', size=(5, 1), font='Any 14'),
                     sg.Button('Analyze', size=(5, 1), font='Helvetica 14'),
-                    sg.Button('Exit', size=(5, 1), font='Helvetica 14')
+                    sg.Button('Exit', size=(5, 1), font='Helvetica 14'),
+                    sg.T(' ' * 10)
+                    sg.Button('Send PDF', size(5, 1), font='Helvetica 14')
             ],
             [
                     sg.T(' ' * 10)
@@ -285,6 +287,14 @@ class FootGui(object):
     def close(self):
         self.window.Close()
 
+    def downloadPDF(self, pdfname):
+        ip = "http://192.168.1.186:8000/api/tests/renderpdf"
+        call = "curl %s --silent --output %s.pdf" % (ip, pdfname)
+        self.downloadWindow = sg.Popup('Footshot', 'Descargando PDF...')
+        os.system(call)
+        self.downloadWindow.Close()
+        sg.Popup('Footshot', 'Descarga finalizada')
+
     def upload_files(self):
         #call from utils the functions
         files = os.listdir(self.folder_name)
@@ -353,24 +363,18 @@ def main():
             loop = True
             while loop:
                 event, values = fg.read()
-                if event == 'Record':
-                    fg.start_streaming()
-                    fg.start_capturing()
-                if event == 'Stop':
-                    fg.stop_capturing()
-                    fg.stop_streaming()
                 if event == 'Exit' or values is None:
                     logging.debug('Closing app')
                     fg.stop_capturing()
                     fg.stop_streaming()     
                     loop = False
-                if event == 'Capture':
+                elif event == 'Capture':
                     fg.save(5)
-                    continue
-                if event == 'New Folder':
+                elif event == 'New Folder':
                     fg.save_folder()
-                if event == 'Save':
-                    fg.upload_files()       
+                elif event == 'Analyze':
+                    #fg.upload_files()
+                    fg.downloadPDF('report')       
 
             sleep(1)
             fg.close()
