@@ -292,8 +292,7 @@ class FootGui(object):
         call = "curl %s --silent --output %s.pdf" % (ip, pdfname)
         self.downloadWindow = sg.PopupNoWait('Descargando PDF...')
         os.system(call)
-        self.downloadWindow.Close()
-        sg.Popup('Footshot', 'Descarga finalizada')
+        succ = sg.Popup('Footshot', 'Descarga finalizada')
 
     def upload_files(self):
         #call from utils the functions
