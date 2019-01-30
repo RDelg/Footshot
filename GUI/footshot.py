@@ -293,7 +293,7 @@ class FootGui(object):
         self.downloadWindow = sg.PopupNoWait('Descargando PDF...')
         response = os.system(call)
         if response == 0:
-            succ = sg.Popup('Footshot', 'Descarga finalizada')
+            self.downloadWindow = sg.Popup('Footshot', 'Descarga finalizada')
         else:
             print("Nani!?")    
         
