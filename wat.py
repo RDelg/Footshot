@@ -27,7 +27,7 @@ class OpenCvCapture(object):
             
             if cv2_cap.isOpened():
                 cams[cnt] = cv2_cap
-                cnt++
+                cnt += 1
 
         if not cv2_cap.isOpened():
             print("Cameras not found!")
