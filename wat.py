@@ -50,8 +50,8 @@ class OpenCvCapture(object):
                 print("Error reading image")
                 break
 
-            cv2.imshow("cam1", cv2.resize(img, (640, 480)))
-            cv2.imshow("cam2", cv2.resize(img, (640, 480)))
+            cv2.imshow("cam1", cv2.resize(img1, (640, 480)))
+            cv2.imshow("cam2", cv2.resize(img2, (640, 480)))
             if cv2.waitKey(5) == 27:
                 break
 
