@@ -23,7 +23,7 @@ class OpenCvCapture(object):
         for i in reversed(range(10)):
             print("Testing for presense of camera #{0}...".format(i))
             cv2_cap = cv2.VideoCapture(i)
-            cnt == 2: break
+            if cnt == 2: break
             
             if cv2_cap.isOpened():
                 cams[cnt] = cv2_cap
