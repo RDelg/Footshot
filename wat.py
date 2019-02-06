@@ -1,57 +1,61 @@
 #!/usr/bin/env python
-import sys
-if sys.version_info[0] >= 3:
-    import PySimpleGUI as sg
-else:
-    import PySimpleGUI27 as sg
-import cv2 as cv
-from PIL import Image
-import io
-from sys import exit as exit
 
 """
-Demo program that displays a webcam using OpenCV
+CV2 video capture example from Pure Thermal 1
 """
-def main():
 
-    sg.ChangeLookAndFeel('LightGreen')
+try:
+    import cv2
+except ImportError:
+    print("ERROR python-opencv must be installed")
+    exit(1)
 
-    # define the window layout
-    layout = [[sg.Text('OpenCV Demo', size=(40, 1), justification='center', font='Helvetica 20')],
-              [sg.Image(filename='', key='image')],
-              [sg.ReadButton('Exit', size=(10, 1), pad=((200, 0), 3), font='Helvetica 14'),
-               sg.RButton('About', size=(10,1), font='Any 14')]]
+class OpenCvCapture(object):
+    """
+    Encapsulate state for capture from Pure Thermal 1 with OpenCV
+    """
 
-    # create the window and show it without the plot
-    window = sg.Window('Demo Application - OpenCV Integration',
-                       location=(800,400))
-    window.Layout(layout).Finalize()
-    
+    def __init__(self):
+        # capture from the LAST camera in the system
+        # presumably, if the system has a built-in webcam it will be the first
+        cnt = 0
+        cams = [None, None]
+        for i in reversed(range(10)):
+            print("Testing for presense of camera #{0}...".format(i))
+            cv2_cap = cv2.VideoCapture(i)
+            cnt == 2: break
+            
+            if cv2_cap.isOpened():
+                cams[cnt] = cv2_cap
+                cnt++
 
-    # ---===--- Event LOOP Read and display frames, operate the GUI --- #
-    cap = cv.VideoCapture(0)
-    while True:
-        button, values = window.ReadNonBlocking()
+        if not cv2_cap.isOpened():
+            print("Cameras not found!")
+            exit(1)
 
-        if button is 'Exit' or values is None:
-            sys.exit(0)
-        elif button == 'About':
-            sg.PopupNoWait('Made with PySimpleGUI',
-                           'www.PySimpleGUI.org',
-                           'Check out how the video keeps playing behind this window.',
-                           'I finally figured out how to display frames from a webcam.',
-                           'ENJOY!  Go make something really cool with this... please!',
-                           keep_on_top=True)
+        self.cv2_cap = cams
 
-        ret, frame = cap.read()
+    def show_video(self):
+        """
+        Run loop for cv2 capture from lepton
+        """
 
-        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        cv2.namedWindow("lepton", cv2.WINDOW_NORMAL)
+        print("Running, ESC or Ctrl-c to exit...")
+        while True:
+            ret1, img1 = self.cv2_cap[0].read()
+            ret2, img2 = self.cv2_cap[1].read()
 
-        # let img be the PIL image
-        img = Image.fromarray(gray)  # create PIL image from frame
-        bio = io.BytesIO()  # a binary memory resident stream
-        img.save(bio, format= 'PNG')  # save image as png to it
-        imgbytes = bio.getvalue()  # this can be used by OpenCV hopefully
-        window.FindElement('image').Update(data=imgbytes)
+            if ret1 == False or ret2 == False:
+                print("Error reading image")
+                break
 
-main()
+            cv2.imshow("cam1", cv2.resize(img, (640, 480)))
+            cv2.imshow("cam2", cv2.resize(img, (640, 480)))
+            if cv2.waitKey(5) == 27:
+                break
+
+        cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    OpenCvCapture().show_video()

@@ -183,16 +183,11 @@ def drawStuff(img, rect, contour):
 	cv2.line(img, l3[0], l3[1], 255)
 	return img
 
-if __name__ == '__main__':
-	# TO DO
-	# Open the images outside the functions (and do the operations there)
-	# Try to stretch the left foot to accomodate the borders
-	# Get differences and normalize 
-	# COO' STUFF
-	COLOR = (0, 0, 255)
+def completeProcessing(imgdir_vis, imgdir_ir):
+	COLOR = (0,0,255)
 
-	cont_vis, im_vis = getContourVisual('./VIS_301.png')[1:3]
-	im_ir = getContourIR('./IR_301.png')[2]
+	cont_vis, im_vis = getContourVisual(imgdir_vis)[1:3]
+	im_ir = getContourIR(imgdir_ir)[2]
 	imtw = warpThermal(im_ir)
 
 	rows, cols = im_vis.shape[:2]
@@ -210,16 +205,26 @@ if __name__ == '__main__':
 	diff = np.absolute(np.subtract(right_flipped.astype(np.float32), 
 							isolated[1].astype(np.float32)))
 	diff = diff.astype(np.uint8)
-	cv2.imshow('diffs', diff)
+	#cv2.imshow('diffs', diff)
 
 	for c in centroids:
 		#print(c)
-		cv2.circle(imtw, c, 5, 0, -1)
+		cv2.circle(im_vis, c, 5, 0, -1)
 
 	for h in cont_vis:
-		cv2.drawContours(imtw, [h], -1, 127, 2)
+		cv2.drawContours(im_vis, [h], -1, 127, 2)
 
+	return [diff, im_vis]
 
-	cv2.imshow('lol', imtw)
+if __name__ == '__main__':
+	# TO DO
+	# Open the images outside the functions (and do the operations there)
+	# Try to stretch the left foot to accomodate the borders
+	# Get differences and normalize 
+	# COO' STUFF
+	i1, i2 = completeProcessing('./VIS_301.png', './IR_301.png')
+	
+	cv2.imshow('lol2', i1)
+	cv2.imshow('lol', i2)
 
 	cv2.waitKey(0)

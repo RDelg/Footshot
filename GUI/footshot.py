@@ -288,6 +288,7 @@ class FootGui(object):
         self.window.Close()
 
     def downloadPDF(self, pdfname):
+        # try to do it with Request module!
         ip = "http://192.168.1.186:8000/api/tests/renderpdf"
         call = "curl %s --silent --output %s.pdf" % (ip, pdfname)
         self.downloadWindow = sg.PopupNoWait('Descargando PDF...')
